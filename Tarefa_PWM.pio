@@ -1,0 +1,22 @@
+.program Tarefa_PWM
+
+; Configura a direção do pino como saída
+set pindirs, 1
+
+.wrap_target
+
+; Gera o pulso PWM
+pull noblock      ; Obtém o valor do registrador FIFO
+mov x, osr        ; Move para o registrador X (duração do pulso)
+set pins, 1       ; Define a saída para HIGH
+
+loop_pulse:
+    jmp x-- loop_pulse  ; Decrementa X até 0 (mantém HIGH pelo tempo necessário)
+
+set pins, 0       ; Define a saída para LOW
+mov x, y          ; Tempo restante do período (LOW)
+
+loop_period:
+    jmp x-- loop_period  ; Decrementa X até 0 (mantém LOW pelo tempo restante)
+
+.wrap
