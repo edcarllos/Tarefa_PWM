@@ -6,17 +6,20 @@ set pindirs, 1
 .wrap_target
 
 ; Gera o pulso PWM
-pull noblock      ; Obtém o valor do registrador FIFO
-mov x, osr        ; Move para o registrador X (duração do pulso)
-set pins, 1       ; Define a saída para HIGH
+pull block          ; Aguarda um novo valor do FIFO
+mov x, osr          ; Move o valor do FIFO para o registrador X (duração do pulso)
+set pins, 1         ; Define a saída para HIGH
 
 loop_pulse:
     jmp x-- loop_pulse  ; Decrementa X até 0 (mantém HIGH pelo tempo necessário)
 
-set pins, 0       ; Define a saída para LOW
-mov x, y          ; Tempo restante do período (LOW)
+set pins, 0         ; Define a saída para LOW
+
+; Calcula o tempo restante do período (20ms - largura do pulso)
+pull block          ; Aguarda o segundo valor do FIFO (tempo LOW)
+mov y, osr          ; Define Y como o tempo restante
 
 loop_period:
-    jmp x-- loop_period  ; Decrementa X até 0 (mantém LOW pelo tempo restante)
+    jmp y-- loop_period  ; Decrementa Y até 0 (mantém LOW pelo tempo restante)
 
 .wrap
